@@ -64,7 +64,8 @@
 						"referenceName": "TargetDelimitedText",
 						"type": "DatasetReference",
 						"parameters": {
-							"targetContainerName": "tbltarget"
+							"targetContainerName": "tbltarget",
+							"taregetSubDirectoryName": "outputdata"
 						}
 					}
 				]
