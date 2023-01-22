@@ -1,18 +1,12 @@
 {
-	"name": "ds_AzureSqlTable",
+	"name": "ds_AzureSqlTable_SCDType1",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "db_AzureSqlDatabase",
 			"type": "LinkedServiceReference",
 			"parameters": {
-				"db_username": {
-					"value": "@dataset().ds_db_username",
-					"type": "Expression"
-				},
-				"db_password": {
-					"value": "@dataset().ds_db_password",
-					"type": "Expression"
-				}
+				"db_username": "adfuser",
+				"db_password": "azure@123"
 			}
 		},
 		"parameters": {
@@ -23,19 +17,38 @@
 			"ds_db_password": {
 				"type": "string",
 				"defaultValue": "azure@123"
-			},
-			"ds_db_schema": {
-				"type": "String",
-				"defaultValue": "dbo"
-			},
-			"ds_db_tablename": {
-				"type": "string",
-				"defaultValue": "tbl_Dim_employee"
 			}
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "Emp_Sid",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Emp_No",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Emp_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Department",
+				"type": "varchar"
+			},
+			{
+				"name": "city",
+				"type": "varchar"
+			},
+			{
+				"name": "LastUpdated_Date",
+				"type": "date"
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "tbl_Dim_employee"

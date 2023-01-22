@@ -13,28 +13,58 @@
 					"description": "Read CSV files from Blob Container"
 				}
 			],
-			"sinks": [],
-			"transformations": [
+			"sinks": [
 				{
-					"name": "assert1"
-				},
+					"dataset": {
+						"referenceName": "ds_AzureSqlTable_SCDType1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
 				{
 					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          Emp_No as string,",
+				"          Emp_No as integer,",
 				"          Emp_Name as string,",
 				"          Department as string,",
 				"          city as string,",
-				"          LastUpdated_Date as string",
+				"          LastUpdated_Date as date 'dd-MM-yyyy'",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceBlobCSV",
-				"alterRow1 assert() ~> assert1",
-				"sourceBlobCSV alterRow() ~> alterRow1"
+				"sourceBlobCSV alterRow(upsertIf(true())) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Emp_Sid as integer,",
+				"          Emp_No as integer,",
+				"          Emp_Name as string,",
+				"          Department as string,",
+				"          city as string,",
+				"          LastUpdated_Date as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['Emp_No'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Emp_No,",
+				"          Emp_Name,",
+				"          Department,",
+				"          city,",
+				"          LastUpdated_Date",
+				"     )) ~> sink1"
 			]
 		}
 	}
