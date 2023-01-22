@@ -25,10 +25,12 @@
 				"defaultValue": "azure@123"
 			},
 			"ds_db_schema": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "dbo"
 			},
 			"ds_db_tablename": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "tbl_Dim_employee"
 			}
 		},
 		"annotations": [],
