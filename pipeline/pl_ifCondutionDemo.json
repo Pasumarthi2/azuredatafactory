@@ -69,6 +69,18 @@
 									"value": "@contains(item().name , 'Emp')",
 									"type": "Expression"
 								},
+								"ifFalseActivities": [
+									{
+										"name": "Wait1",
+										"description": "",
+										"type": "Wait",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 1
+										}
+									}
+								],
 								"ifTrueActivities": [
 									{
 										"name": "Copy data1",
