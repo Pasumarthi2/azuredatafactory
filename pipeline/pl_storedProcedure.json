@@ -1,0 +1,35 @@
+{
+	"name": "pl_storedProcedure",
+	"properties": {
+		"activities": [
+			{
+				"name": "Stored procedure1",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[update_customer]"
+				},
+				"linkedServiceName": {
+					"referenceName": "db_AzureSqlDatabase",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"db_username": "adfuser",
+						"db_password": "azure@123"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "General Activities"
+		},
+		"annotations": []
+	}
+}
