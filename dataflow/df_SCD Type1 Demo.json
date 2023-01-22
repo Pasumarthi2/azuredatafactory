@@ -5,14 +5,36 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "ds_Blob_SourceDelimitedText_SCDType1",
+						"type": "DatasetReference"
+					},
+					"name": "sourceBlobCSV",
+					"description": "Read CSV files from Blob Container"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "assert1"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1"
+				"source(output(",
+				"          Emp_No as string,",
+				"          Emp_Name as string,",
+				"          Department as string,",
+				"          city as string,",
+				"          LastUpdated_Date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceBlobCSV",
+				"alterRow1 assert() ~> assert1",
+				"sourceBlobCSV alterRow() ~> alterRow1"
 			]
 		}
 	}
