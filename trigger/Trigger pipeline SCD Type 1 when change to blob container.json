@@ -2,12 +2,16 @@
 	"name": "Trigger pipeline SCD Type 1 when change to blob container",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
 					"referenceName": "pl_SCD Type 1",
 					"type": "PipelineReference"
+				},
+				"parameters": {
+					"pl_db_username": "adfuser",
+					"pl_db_password": "azure@123"
 				}
 			}
 		],
