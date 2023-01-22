@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "SourceDelimitedText",
+						"referenceName": "ds_Blob_SourceDelimitedText_SCDType1",
 						"type": "DatasetReference"
 					},
 					"name": "sourceBlobCSV",
@@ -29,11 +29,11 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          Emp_No as integer,",
+				"          Emp_No as string,",
 				"          Emp_Name as string,",
 				"          Department as string,",
 				"          city as string,",
-				"          LastUpdated_Date as date 'dd-MM-yyyy'",
+				"          LastUpdated_Date as string",
 				"     ),",
 				"     allowSchemaDrift: false,",
 				"     validateSchema: true,",
