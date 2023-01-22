@@ -1,0 +1,106 @@
+{
+	"name": "pl_CopyFilesFromOneContainerToAnother",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"description": "Copy files from One container to another",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDelimitedText",
+						"type": "DatasetReference",
+						"parameters": {
+							"SourceContainerName": {
+								"value": "@pipeline().parameters.tblsourceFromPipeline",
+								"type": "Expression"
+							},
+							"SourceContainerSubdirectory": {
+								"value": "@pipeline().parameters.sourcesubdirectoryFromPipeline",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "TargetDelimitedText",
+						"type": "DatasetReference",
+						"parameters": {
+							"targetContainerName": {
+								"value": "@pipeline().parameters.tbltargetFromPipeline",
+								"type": "Expression"
+							},
+							"taregetSubDirectoryName": {
+								"value": "@pipeline().parameters.outputdataFromPipeline",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"tblsourceFromPipeline": {
+				"type": "String",
+				"defaultValue": "tblsource"
+			},
+			"sourcesubdirectoryFromPipeline": {
+				"type": "String",
+				"defaultValue": "data"
+			},
+			"tbltargetFromPipeline": {
+				"type": "String",
+				"defaultValue": "tbltarget"
+			},
+			"outputdataFromPipeline": {
+				"type": "String",
+				"defaultValue": "outputdata"
+			}
+		},
+		"annotations": []
+	}
+}
