@@ -125,7 +125,7 @@
 													"type": "AzureBlobStorageReadSettings",
 													"recursive": true,
 													"wildcardFolderPath": {
-														"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
 														"type": "Expression"
 													},
 													"wildcardFileName": {
@@ -184,7 +184,10 @@
 														"value": "@pipeline().parameters.pl__param_tbltargetContainer",
 														"type": "Expression"
 													},
-													"taregetSubDirectoryName": "outputdata"
+													"taregetSubDirectoryName": {
+														"value": "@pipeline().parameters.pl_param_targetSubdirectory",
+														"type": "Expression"
+													}
 												}
 											}
 										]
