@@ -5,59 +5,14 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "ds_Blob_SourceDelimitedText_SCDType1",
-						"type": "DatasetReference"
-					},
-					"name": "sourceBlobCSV",
-					"description": "Read CSV files from Blob Container"
+					"name": "source1"
 				}
 			],
-			"sinks": [
-				{
-					"dataset": {
-						"referenceName": "ds_AzureSqlTable",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
-				}
-			],
-			"transformations": [
-				{
-					"name": "alterRow1"
-				}
-			],
+			"sinks": [],
+			"transformations": [],
 			"scriptLines": [
-				"source(output(",
-				"          Emp_No as string,",
-				"          Emp_Name as string,",
-				"          Department as string,",
-				"          city as string,",
-				"          LastUpdated_Date as string",
-				"     ),",
-				"     allowSchemaDrift: false,",
-				"     validateSchema: true,",
-				"     ignoreNoFilesFound: false,",
-				"     wildcardPaths:['*.csv']) ~> sourceBlobCSV",
-				"sourceBlobCSV alterRow(upsertIf(true())) ~> alterRow1",
-				"alterRow1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:false,",
-				"     updateable:false,",
-				"     upsertable:true,",
-				"     keys:['Emp_No'],",
-				"     format: 'table',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError',",
-				"     mapColumn(",
-				"          Emp_No,",
-				"          Emp_Name,",
-				"          Department,",
-				"          city,",
-				"          LastUpdated_Date",
-				"     )) ~> sink1"
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source1"
 			]
 		}
 	}
