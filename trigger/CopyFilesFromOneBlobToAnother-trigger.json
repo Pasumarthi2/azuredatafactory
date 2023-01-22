@@ -20,10 +20,19 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Minute",
-				"interval": 15,
+				"frequency": "Day",
+				"interval": 1,
 				"startTime": "2023-01-22T03:51:00Z",
-				"timeZone": "UTC"
+				"endTime": "2023-01-23T03:53:45Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						12
+					]
+				}
 			}
 		}
 	}
