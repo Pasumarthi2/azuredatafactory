@@ -164,8 +164,14 @@
 												"referenceName": "SourceDelimitedText",
 												"type": "DatasetReference",
 												"parameters": {
-													"SourceContainerName": "tblsource",
-													"SourceContainerSubdirectory": "data"
+													"SourceContainerName": {
+														"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+														"type": "Expression"
+													},
+													"SourceContainerSubdirectory": {
+														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+														"type": "Expression"
+													}
 												}
 											}
 										],
@@ -174,7 +180,14 @@
 												"referenceName": "TargetDelimitedText",
 												"type": "DatasetReference",
 												"parameters": {
-													"targetContainerName": "tbltarget"
+													"targetContainerName": {
+														"value": "@pipeline().parameters.pl__param_tbltargetContainer",
+														"type": "Expression"
+													},
+													"taregetSubDirectoryName": {
+														"value": "@pipeline().parameters.pl_param_targetSubdirectory",
+														"type": "Expression"
+													}
 												}
 											}
 										]
