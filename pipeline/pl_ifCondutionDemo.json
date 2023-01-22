@@ -96,7 +96,7 @@
 										"typeProperties": {
 											"variableName": "curremtFilename",
 											"value": {
-												"value": "item().name",
+												"value": "@item().name",
 												"type": "Expression"
 											}
 										}
