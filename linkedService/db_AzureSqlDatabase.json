@@ -1,0 +1,21 @@
+{
+	"name": "db_AzureSqlDatabase",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"db_username": {
+				"type": "String",
+				"defaultValue": "adfuser"
+			},
+			"db_password": {
+				"type": "String",
+				"defaultValue": "azure@123"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=adfserver01222023.database.windows.net;Initial Catalog=adfdatabase01222023;User ID=@{linkedService().db_username};Password=@{linkedService().db_password}"
+		}
+	}
+}
