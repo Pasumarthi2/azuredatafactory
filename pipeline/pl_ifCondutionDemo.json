@@ -73,8 +73,7 @@
 								},
 								"ifFalseActivities": [
 									{
-										"name": "Wait1",
-										"description": "",
+										"name": "FalseWait",
 										"type": "Wait",
 										"dependsOn": [],
 										"userProperties": [],
@@ -85,86 +84,13 @@
 								],
 								"ifTrueActivities": [
 									{
-										"name": "Copy data1",
-										"type": "Copy",
+										"name": "TrueWait",
+										"type": "Wait",
 										"dependsOn": [],
-										"policy": {
-											"timeout": "0.12:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
 										"userProperties": [],
 										"typeProperties": {
-											"source": {
-												"type": "DelimitedTextSource",
-												"storeSettings": {
-													"type": "AzureBlobStorageReadSettings",
-													"recursive": true,
-													"wildcardFolderPath": {
-														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
-														"type": "Expression"
-													},
-													"enablePartitionDiscovery": false
-												},
-												"formatSettings": {
-													"type": "DelimitedTextReadSettings"
-												}
-											},
-											"sink": {
-												"type": "DelimitedTextSink",
-												"storeSettings": {
-													"type": "AzureBlobStorageWriteSettings"
-												},
-												"formatSettings": {
-													"type": "DelimitedTextWriteSettings",
-													"quoteAllText": true,
-													"fileExtension": ".txt"
-												}
-											},
-											"enableStaging": false,
-											"translator": {
-												"type": "TabularTranslator",
-												"typeConversion": true,
-												"typeConversionSettings": {
-													"allowDataTruncation": true,
-													"treatBooleanAsNumber": false
-												}
-											}
-										},
-										"inputs": [
-											{
-												"referenceName": "SourceDelimitedText",
-												"type": "DatasetReference",
-												"parameters": {
-													"SourceContainerName": {
-														"value": "@pipeline().parameters.pl__param_tblsourceContainer",
-														"type": "Expression"
-													},
-													"SourceContainerSubdirectory": {
-														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
-														"type": "Expression"
-													}
-												}
-											}
-										],
-										"outputs": [
-											{
-												"referenceName": "TargetDelimitedText",
-												"type": "DatasetReference",
-												"parameters": {
-													"targetContainerName": {
-														"value": "@pipeline().parameters.pl__param_tbltargetContainer",
-														"type": "Expression"
-													},
-													"taregetSubDirectoryName": {
-														"value": "@pipeline().parameters.pl_param_targetSubdirectory",
-														"type": "Expression"
-													}
-												}
-											}
-										]
+											"waitTimeInSeconds": 1
+										}
 									}
 								]
 							}
@@ -189,6 +115,11 @@
 			"pl__param_tblsourceContainer": {
 				"type": "string",
 				"defaultValue": "tblsource"
+			}
+		},
+		"variables": {
+			"curremtFilename": {
+				"type": "String"
 			}
 		},
 		"folder": {
