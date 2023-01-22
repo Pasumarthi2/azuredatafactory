@@ -1,0 +1,92 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfdemogit01222023"
+		},
+		"AzureBlobStorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage'"
+		},
+		"db_AzureSqlDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'db_AzureSqlDatabase'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=adfserver01222023.database.windows.net;Initial Catalog=adfdatabase01222023;User ID=@{linkedService().db_username};Password=@{linkedService().db_password}"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tblsourceFromPipeline": {
+			"type": "string",
+			"defaultValue": "tblsource"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_sourcesubdirectoryFromPipeline": {
+			"type": "string",
+			"defaultValue": "data"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tbltargetFromPipeline": {
+			"type": "string",
+			"defaultValue": "tbltarget"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_outputdataFromPipeline": {
+			"type": "string",
+			"defaultValue": "outputdata"
+		},
+		"Trigger pipeline SCD Type 1 when change to blob container_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/e473806f-f465-4345-8bd3-41df581cd753/resourceGroups/adfdemo/providers/Microsoft.Storage/storageAccounts/azstorageacc01222023"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "adfdemogit01222023_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStorage_connectionString": {
+						"value": "[parameters('AzureBlobStorage_connectionString')]"
+					},
+					"db_AzureSqlDatabase_connectionString": {
+						"value": "[parameters('db_AzureSqlDatabase_connectionString')]"
+					},
+					"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tblsourceFromPipeline": {
+						"value": "[parameters('CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tblsourceFromPipeline')]"
+					},
+					"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_sourcesubdirectoryFromPipeline": {
+						"value": "[parameters('CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_sourcesubdirectoryFromPipeline')]"
+					},
+					"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tbltargetFromPipeline": {
+						"value": "[parameters('CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tbltargetFromPipeline')]"
+					},
+					"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_outputdataFromPipeline": {
+						"value": "[parameters('CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_outputdataFromPipeline')]"
+					},
+					"Trigger pipeline SCD Type 1 when change to blob container_properties_typeProperties_scope": {
+						"value": "[parameters('Trigger pipeline SCD Type 1 when change to blob container_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

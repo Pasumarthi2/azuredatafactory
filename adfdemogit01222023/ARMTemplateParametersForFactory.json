@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfdemogit01222023"
+		},
+		"AzureBlobStorage_connectionString": {
+			"value": ""
+		},
+		"db_AzureSqlDatabase_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=adfserver01222023.database.windows.net;Initial Catalog=adfdatabase01222023;User ID=@{linkedService().db_username};Password=@{linkedService().db_password}"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tblsourceFromPipeline": {
+			"value": "tblsource"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_sourcesubdirectoryFromPipeline": {
+			"value": "data"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tbltargetFromPipeline": {
+			"value": "tbltarget"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_outputdataFromPipeline": {
+			"value": "outputdata"
+		},
+		"Trigger pipeline SCD Type 1 when change to blob container_properties_typeProperties_scope": {
+			"value": "/subscriptions/e473806f-f465-4345-8bd3-41df581cd753/resourceGroups/adfdemo/providers/Microsoft.Storage/storageAccounts/azstorageacc01222023"
+		}
+	}
+}

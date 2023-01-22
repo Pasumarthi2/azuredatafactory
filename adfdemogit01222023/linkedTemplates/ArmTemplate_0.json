@@ -1,0 +1,1422 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfdemogit01222023"
+		},
+		"AzureBlobStorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage'"
+		},
+		"db_AzureSqlDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'db_AzureSqlDatabase'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=adfserver01222023.database.windows.net;Initial Catalog=adfdatabase01222023;User ID=@{linkedService().db_username};Password=@{linkedService().db_password}"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tblsourceFromPipeline": {
+			"type": "string",
+			"defaultValue": "tblsource"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_sourcesubdirectoryFromPipeline": {
+			"type": "string",
+			"defaultValue": "data"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tbltargetFromPipeline": {
+			"type": "string",
+			"defaultValue": "tbltarget"
+		},
+		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_outputdataFromPipeline": {
+			"type": "string",
+			"defaultValue": "outputdata"
+		},
+		"Trigger pipeline SCD Type 1 when change to blob container_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/e473806f-f465-4345-8bd3-41df581cd753/resourceGroups/adfdemo/providers/Microsoft.Storage/storageAccounts/azstorageacc01222023"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/db_AzureSqlDatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"db_username": {
+						"type": "String",
+						"defaultValue": "adfuser"
+					},
+					"db_password": {
+						"type": "String",
+						"defaultValue": "azure@123"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('db_AzureSqlDatabase_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ArchieveTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"ArchievetargetContainerName": {
+						"type": "String",
+						"defaultValue": "archive"
+					},
+					"ArchievetaregetSubDirectoryName": {
+						"type": "String",
+						"defaultValue": "backup"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().ArchievetaregetSubDirectoryName",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().ArchievetargetContainerName",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDelimitedText')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"SourceContainerName": {
+						"type": "String",
+						"defaultValue": "tblsource"
+					},
+					"SourceContainerSubdirectory": {
+						"type": "String",
+						"defaultValue": "data"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().SourceContainerSubdirectory",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().SourceContainerName",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Emp_No",
+						"type": "String"
+					},
+					{
+						"name": "Emp_Name",
+						"type": "String"
+					},
+					{
+						"name": "Department",
+						"type": "String"
+					},
+					{
+						"name": "city",
+						"type": "String"
+					},
+					{
+						"name": "LastUpdated_Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TargetDelimitedText')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"targetContainerName": {
+						"type": "String",
+						"defaultValue": "tbltarget"
+					},
+					"taregetSubDirectoryName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().taregetSubDirectoryName",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().targetContainerName",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_AzureSqlTable_SCDType1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "db_AzureSqlDatabase",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"db_username": "adfuser",
+						"db_password": "azure@123"
+					}
+				},
+				"parameters": {
+					"ds_db_username": {
+						"type": "string",
+						"defaultValue": "adfuser"
+					},
+					"ds_db_password": {
+						"type": "string",
+						"defaultValue": "azure@123"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Emp_Sid",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Emp_No",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Emp_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "Department",
+						"type": "varchar"
+					},
+					{
+						"name": "city",
+						"type": "varchar"
+					},
+					{
+						"name": "LastUpdated_Date",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tbl_Dim_employee"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/db_AzureSqlDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_Blob_SourceDelimitedText_SCDType1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "tbl_emp_source.csv",
+						"folderPath": "data",
+						"container": "tblsource"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Emp_No",
+						"type": "String"
+					},
+					{
+						"name": "Emp_Name",
+						"type": "String"
+					},
+					{
+						"name": "Department",
+						"type": "String"
+					},
+					{
+						"name": "city",
+						"type": "String"
+					},
+					{
+						"name": "LastUpdated_Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_CopyFilesFromOneContainerToAnother')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"description": "Copy files from One container to another",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDelimitedText",
+								"type": "DatasetReference",
+								"parameters": {
+									"SourceContainerName": {
+										"value": "@pipeline().parameters.tblsourceFromPipeline",
+										"type": "Expression"
+									},
+									"SourceContainerSubdirectory": {
+										"value": "@pipeline().parameters.sourcesubdirectoryFromPipeline",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "TargetDelimitedText",
+								"type": "DatasetReference",
+								"parameters": {
+									"targetContainerName": {
+										"value": "@pipeline().parameters.tbltargetFromPipeline",
+										"type": "Expression"
+									},
+									"taregetSubDirectoryName": {
+										"value": "@pipeline().parameters.outputdataFromPipeline",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"tblsourceFromPipeline": {
+						"type": "String",
+						"defaultValue": "tblsource"
+					},
+					"sourcesubdirectoryFromPipeline": {
+						"type": "String",
+						"defaultValue": "data"
+					},
+					"tbltargetFromPipeline": {
+						"type": "String",
+						"defaultValue": "tbltarget"
+					},
+					"outputdataFromPipeline": {
+						"type": "String",
+						"defaultValue": "outputdata"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDelimitedText')]",
+				"[concat(variables('factoryId'), '/datasets/TargetDelimitedText')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ForEachDemo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "SourceDelimitedText",
+								"type": "DatasetReference",
+								"parameters": {
+									"SourceContainerName": "tblsource",
+									"SourceContainerSubdirectory": "data"
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata1').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+													"type": "Expression"
+												},
+												"wildcardFileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												},
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".csv"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "SourceDelimitedText",
+											"type": "DatasetReference",
+											"parameters": {
+												"SourceContainerName": {
+													"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+													"type": "Expression"
+												},
+												"SourceContainerSubdirectory": {
+													"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "TargetDelimitedText",
+											"type": "DatasetReference",
+											"parameters": {
+												"targetContainerName": {
+													"value": "@pipeline().parameters.pl__param_tbltargetContainer",
+													"type": "Expression"
+												},
+												"taregetSubDirectoryName": {
+													"value": "@pipeline().parameters.pl_param_targetSubdirectory",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pl_param_SoureSubdirectory": {
+						"type": "string",
+						"defaultValue": "data"
+					},
+					"pl_param_targetSubdirectory": {
+						"type": "string",
+						"defaultValue": "outputdata"
+					},
+					"pl__param_tbltargetContainer": {
+						"type": "string",
+						"defaultValue": "tbltarget"
+					},
+					"pl__param_tblsourceContainer": {
+						"type": "string",
+						"defaultValue": "tblsource"
+					}
+				},
+				"folder": {
+					"name": "Iteration Conditionals"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDelimitedText')]",
+				"[concat(variables('factoryId'), '/datasets/TargetDelimitedText')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_GetMetadataDemo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "SourceDelimitedText",
+								"type": "DatasetReference",
+								"parameters": {
+									"SourceContainerName": "tblsource",
+									"SourceContainerSubdirectory": "data"
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata1').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+													"type": "Expression"
+												},
+												"wildcardFileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												},
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".csv"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "SourceDelimitedText",
+											"type": "DatasetReference",
+											"parameters": {
+												"SourceContainerName": {
+													"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+													"type": "Expression"
+												},
+												"SourceContainerSubdirectory": {
+													"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "TargetDelimitedText",
+											"type": "DatasetReference",
+											"parameters": {
+												"targetContainerName": {
+													"value": "@pipeline().parameters.pl__param_tbltargetContainer",
+													"type": "Expression"
+												},
+												"taregetSubDirectoryName": {
+													"value": "@pipeline().parameters.pl_param_targetSubdirectory",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pl_param_SoureSubdirectory": {
+						"type": "string",
+						"defaultValue": "data"
+					},
+					"pl_param_targetSubdirectory": {
+						"type": "string",
+						"defaultValue": "outputdata"
+					},
+					"pl__param_tbltargetContainer": {
+						"type": "string",
+						"defaultValue": "tbltarget"
+					},
+					"pl__param_tblsourceContainer": {
+						"type": "string",
+						"defaultValue": "tblsource"
+					}
+				},
+				"folder": {
+					"name": "General Activities"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDelimitedText')]",
+				"[concat(variables('factoryId'), '/datasets/TargetDelimitedText')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ifCondutionDemo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "SourceDelimitedText",
+								"type": "DatasetReference",
+								"parameters": {
+									"SourceContainerName": {
+										"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+										"type": "Expression"
+									},
+									"SourceContainerSubdirectory": {
+										"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+										"type": "Expression"
+									}
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata1').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "If Condition1",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@contains(item().name , 'Emp')",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Otherwise Condition",
+												"description": "Other file type Moving to Achieve directory",
+												"type": "Wait",
+												"dependsOn": [
+													{
+														"activity": "Set variable2",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 1
+												}
+											},
+											{
+												"name": "Set variable2",
+												"type": "SetVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "curremtFilename",
+													"value": {
+														"value": "@item().name",
+														"type": "Expression"
+													}
+												}
+											},
+											{
+												"name": "Copy data to archeive container",
+												"type": "Copy",
+												"dependsOn": [
+													{
+														"activity": "Otherwise Condition",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "DelimitedTextSource",
+														"storeSettings": {
+															"type": "AzureBlobStorageReadSettings",
+															"recursive": true,
+															"wildcardFolderPath": {
+																"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+																"type": "Expression"
+															},
+															"wildcardFileName": {
+																"value": "@variables('curremtFilename')",
+																"type": "Expression"
+															},
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "DelimitedTextReadSettings"
+														}
+													},
+													"sink": {
+														"type": "DelimitedTextSink",
+														"storeSettings": {
+															"type": "AzureBlobStorageWriteSettings"
+														},
+														"formatSettings": {
+															"type": "DelimitedTextWriteSettings",
+															"quoteAllText": true,
+															"fileExtension": ".txt"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "SourceDelimitedText",
+														"type": "DatasetReference",
+														"parameters": {
+															"SourceContainerName": {
+																"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+																"type": "Expression"
+															},
+															"SourceContainerSubdirectory": {
+																"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "ArchieveTarget",
+														"type": "DatasetReference",
+														"parameters": {
+															"ArchievetargetContainerName": {
+																"value": "@pipeline().parameters.pl__param_archeiveContainer",
+																"type": "Expression"
+															},
+															"ArchievetaregetSubDirectoryName": {
+																"value": "@pipeline().parameters.pl__param_archeiveSubdirectory",
+																"type": "Expression"
+															}
+														}
+													}
+												]
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Condition Satisfied",
+												"description": "Condition satisfied -Moving file to target directory",
+												"type": "Wait",
+												"dependsOn": [
+													{
+														"activity": "Set variable1",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 1
+												}
+											},
+											{
+												"name": "Copy data to tbltarget container",
+												"type": "Copy",
+												"dependsOn": [
+													{
+														"activity": "Condition Satisfied",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "DelimitedTextSource",
+														"storeSettings": {
+															"type": "AzureBlobStorageReadSettings",
+															"recursive": true,
+															"wildcardFolderPath": {
+																"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+																"type": "Expression"
+															},
+															"wildcardFileName": {
+																"value": "@variables('curremtFilename')",
+																"type": "Expression"
+															},
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "DelimitedTextReadSettings"
+														}
+													},
+													"sink": {
+														"type": "DelimitedTextSink",
+														"storeSettings": {
+															"type": "AzureBlobStorageWriteSettings"
+														},
+														"formatSettings": {
+															"type": "DelimitedTextWriteSettings",
+															"quoteAllText": true,
+															"fileExtension": ".csv"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "SourceDelimitedText",
+														"type": "DatasetReference",
+														"parameters": {
+															"SourceContainerName": {
+																"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+																"type": "Expression"
+															},
+															"SourceContainerSubdirectory": {
+																"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "TargetDelimitedText",
+														"type": "DatasetReference",
+														"parameters": {
+															"targetContainerName": {
+																"value": "@pipeline().parameters.pl__param_tbltargetContainer",
+																"type": "Expression"
+															},
+															"taregetSubDirectoryName": {
+																"value": "@pipeline().parameters.pl_param_targetSubdirectory",
+																"type": "Expression"
+															}
+														}
+													}
+												]
+											},
+											{
+												"name": "Set variable1",
+												"type": "SetVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "curremtFilename",
+													"value": {
+														"value": "@item().name",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pl_param_SoureSubdirectory": {
+						"type": "string",
+						"defaultValue": "data"
+					},
+					"pl_param_targetSubdirectory": {
+						"type": "string",
+						"defaultValue": "outputdata"
+					},
+					"pl__param_tbltargetContainer": {
+						"type": "string",
+						"defaultValue": "tbltarget"
+					},
+					"pl__param_tblsourceContainer": {
+						"type": "string",
+						"defaultValue": "tblsource"
+					},
+					"pl__param_archeiveContainer": {
+						"type": "string",
+						"defaultValue": "archive"
+					},
+					"pl__param_archeiveSubdirectory": {
+						"type": "string",
+						"defaultValue": "backup"
+					}
+				},
+				"variables": {
+					"curremtFilename": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Iteration Conditionals"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDelimitedText')]",
+				"[concat(variables('factoryId'), '/datasets/ArchieveTarget')]",
+				"[concat(variables('factoryId'), '/datasets/TargetDelimitedText')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_SCD Type1 Demo')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_Blob_SourceDelimitedText_SCDType1",
+								"type": "DatasetReference"
+							},
+							"name": "sourceBlobCSV",
+							"description": "Read CSV files from Blob Container"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_AzureSqlTable_SCDType1",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Emp_No as integer,",
+						"          Emp_Name as string,",
+						"          Department as string,",
+						"          city as string,",
+						"          LastUpdated_Date as date 'dd-MM-yyyy'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceBlobCSV",
+						"sourceBlobCSV alterRow(upsertIf(true())) ~> alterRow1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Emp_Sid as integer,",
+						"          Emp_No as integer,",
+						"          Emp_Name as string,",
+						"          Department as string,",
+						"          city as string,",
+						"          LastUpdated_Date as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['Emp_No'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Emp_No,",
+						"          Emp_Name,",
+						"          Department,",
+						"          city,",
+						"          LastUpdated_Date",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_Blob_SourceDelimitedText_SCDType1')]",
+				"[concat(variables('factoryId'), '/datasets/ds_AzureSqlTable_SCDType1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyFilesFromOneBlobToAnother-trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_CopyFilesFromOneContainerToAnother",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"tblsourceFromPipeline": "[parameters('CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tblsourceFromPipeline')]",
+							"sourcesubdirectoryFromPipeline": "[parameters('CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_sourcesubdirectoryFromPipeline')]",
+							"tbltargetFromPipeline": "[parameters('CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_tbltargetFromPipeline')]",
+							"outputdataFromPipeline": "[parameters('CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_outputdataFromPipeline')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-22T03:51:00Z",
+						"endTime": "2023-01-23T03:53:45Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								12
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_CopyFilesFromOneContainerToAnother')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_SCD Type 1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_SCD Type1 Demo",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_SCD Type1 Demo",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceBlobCSV": {},
+									"sink1": {
+										"ds_db_username": {
+											"value": "@pipeline().parameters.pl_db_username",
+											"type": "Expression"
+										},
+										"ds_db_password": {
+											"value": "@pipeline().parameters.pl_db_password",
+											"type": "Expression"
+										}
+									}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pl_db_username": {
+						"type": "String",
+						"defaultValue": "adfuser"
+					},
+					"pl_db_password": {
+						"type": "String",
+						"defaultValue": "azure@123"
+					}
+				},
+				"folder": {
+					"name": "SCD Types Demo"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_SCD Type1 Demo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Trigger pipeline SCD Type 1 when change to blob container')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_SCD Type 1",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/tblsource/blobs/data/tbl_emp_source.csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('Trigger pipeline SCD Type 1 when change to blob container_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobDeleted",
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_SCD Type 1')]"
+			]
+		}
+	]
+}
