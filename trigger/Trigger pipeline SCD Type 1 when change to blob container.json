@@ -1,0 +1,25 @@
+{
+	"name": "Trigger pipeline SCD Type 1 when change to blob container",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_SCD Type 1",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/tblsource/blobs/data/tbl_emp_source.csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/e473806f-f465-4345-8bd3-41df581cd753/resourceGroups/adfdemo/providers/Microsoft.Storage/storageAccounts/azstorageacc01222023",
+			"events": [
+				"Microsoft.Storage.BlobDeleted",
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
