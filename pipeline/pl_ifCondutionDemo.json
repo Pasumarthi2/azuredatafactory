@@ -182,8 +182,14 @@
 												"referenceName": "ArchieveTarget",
 												"type": "DatasetReference",
 												"parameters": {
-													"ArchievetargetContainerName": "archive",
-													"ArchievetaregetSubDirectoryName": "backup"
+													"ArchievetargetContainerName": {
+														"value": "@pipeline().parameters.pl__param_archeiveContainer",
+														"type": "Expression"
+													},
+													"ArchievetaregetSubDirectoryName": {
+														"value": "@pipeline().parameters.pl__param_archeiveSubdirectory",
+														"type": "Expression"
+													}
 												}
 											}
 										]
@@ -332,6 +338,14 @@
 			"pl__param_tblsourceContainer": {
 				"type": "string",
 				"defaultValue": "tblsource"
+			},
+			"pl__param_archeiveContainer": {
+				"type": "string",
+				"defaultValue": "archive"
+			},
+			"pl__param_archeiveSubdirectory": {
+				"type": "string",
+				"defaultValue": "backup"
 			}
 		},
 		"variables": {
