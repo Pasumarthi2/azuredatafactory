@@ -1,0 +1,17 @@
+{
+	"name": "pl_setvariable_Wait",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": []
+			}
+		],
+		"folder": {
+			"name": "General Activities"
+		},
+		"annotations": []
+	}
+}
