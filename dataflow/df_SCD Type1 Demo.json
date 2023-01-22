@@ -15,6 +15,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "ds_AzureSqlTable",
+						"type": "DatasetReference"
+					},
 					"name": "sink1"
 				}
 			],
@@ -24,15 +28,36 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
+				"source(output(",
+				"          Emp_No as integer,",
+				"          Emp_Name as string,",
+				"          Department as string,",
+				"          city as string,",
+				"          LastUpdated_Date as date 'dd-MM-yyyy'",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: true,",
 				"     ignoreNoFilesFound: false,",
-				"     wildcardPaths:['tbl_emp_source.csv']) ~> sourceBlobCSV",
+				"     wildcardPaths:['*.csv']) ~> sourceBlobCSV",
 				"sourceBlobCSV alterRow(upsertIf(true())) ~> alterRow1",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['Emp_No'],",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Emp_No,",
+				"          Emp_Name,",
+				"          Department,",
+				"          city,",
+				"          LastUpdated_Date",
+				"     )) ~> sink1"
 			]
 		}
 	}

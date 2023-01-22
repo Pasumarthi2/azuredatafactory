@@ -20,6 +20,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "tbl_emp_source.csv",
 				"folderPath": {
 					"value": "@dataset().SourceContainerSubdirectory",
 					"type": "Expression"
@@ -34,6 +35,27 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "Emp_No",
+				"type": "String"
+			},
+			{
+				"name": "Emp_Name",
+				"type": "String"
+			},
+			{
+				"name": "Department",
+				"type": "String"
+			},
+			{
+				"name": "city",
+				"type": "String"
+			},
+			{
+				"name": "LastUpdated_Date",
+				"type": "String"
+			}
+		]
 	}
 }
