@@ -17,7 +17,8 @@
 		],
 		"type": "BlobEventsTrigger",
 		"typeProperties": {
-			"blobPathBeginsWith": "/tblsource/blobs/data/tbl_emp_source.csv",
+			"blobPathBeginsWith": "/tblsource/blobs/data/tbl_emp_source",
+			"blobPathEndsWith": ".csv",
 			"ignoreEmptyBlobs": true,
 			"scope": "/subscriptions/e473806f-f465-4345-8bd3-41df581cd753/resourceGroups/adfdemo/providers/Microsoft.Storage/storageAccounts/azstorageacc01222023",
 			"events": [
