@@ -21,11 +21,11 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"folderPath": {
-					"value": "@dataset().taregetSubDirectoryName",
+					"value": "@dataset().ArchievetaregetSubDirectoryName",
 					"type": "Expression"
 				},
 				"container": {
-					"value": "@dataset().targetContainerName",
+					"value": "@dataset().ArchievetargetContainerName",
 					"type": "Expression"
 				}
 			},
