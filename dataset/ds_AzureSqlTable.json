@@ -37,14 +37,8 @@
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": {
-				"value": "@dataset().ds_db_schema",
-				"type": "Expression"
-			},
-			"table": {
-				"value": "@dataset().ds_db_tablename",
-				"type": "Expression"
-			}
+			"schema": "dbo",
+			"table": "tbl_Dim_employee"
 		}
 	}
 }
