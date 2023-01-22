@@ -73,7 +73,8 @@
 								},
 								"ifFalseActivities": [
 									{
-										"name": "FileType-Other-Archieving",
+										"name": "Otherwise Condition",
+										"description": "Other file type Moving to Achieve directory",
 										"type": "Wait",
 										"dependsOn": [
 											{
@@ -106,7 +107,7 @@
 										"type": "Copy",
 										"dependsOn": [
 											{
-												"activity": "FileType-Other-Archieving",
+												"activity": "Otherwise Condition",
 												"dependencyConditions": [
 													"Succeeded"
 												]
@@ -197,7 +198,8 @@
 								],
 								"ifTrueActivities": [
 									{
-										"name": "TrueWait",
+										"name": "Condition Satisfied",
+										"description": "Condition satisfied -Moving file to target directory",
 										"type": "Wait",
 										"dependsOn": [
 											{
@@ -217,7 +219,7 @@
 										"type": "Copy",
 										"dependsOn": [
 											{
-												"activity": "TrueWait",
+												"activity": "Condition Satisfied",
 												"dependencyConditions": [
 													"Succeeded"
 												]
