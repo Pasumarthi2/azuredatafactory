@@ -1,0 +1,48 @@
+{
+	"name": "ds_AzureSqlTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "db_AzureSqlDatabase",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"db_username": {
+					"value": "@dataset().ds_db_username",
+					"type": "Expression"
+				},
+				"db_password": {
+					"value": "@dataset().ds_db_password",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"ds_db_username": {
+				"type": "string",
+				"defaultValue": "adfuser"
+			},
+			"ds_db_password": {
+				"type": "string",
+				"defaultValue": "azure@123"
+			},
+			"ds_db_schema": {
+				"type": "String"
+			},
+			"ds_db_tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().ds_db_schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().ds_db_tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
