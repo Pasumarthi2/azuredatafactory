@@ -61,7 +61,18 @@
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"cases": []
+								"on": {
+									"value": "@item().DirectoryName",
+									"type": "Expression"
+								},
+								"cases": [
+									{
+										"value": "tbltarget"
+									},
+									{
+										"value": "archive"
+									}
+								]
 							}
 						}
 					]
