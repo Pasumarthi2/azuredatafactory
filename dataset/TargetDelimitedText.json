@@ -1,0 +1,38 @@
+{
+	"name": "TargetDelimitedText",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"targetContainerName": {
+				"type": "String",
+				"defaultValue": "tbltarget"
+			},
+			"taregetSubDirectoryName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@dataset().taregetSubDirectoryName",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().targetContainerName",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
