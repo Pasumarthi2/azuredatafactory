@@ -1416,7 +1416,8 @@
 				],
 				"type": "BlobEventsTrigger",
 				"typeProperties": {
-					"blobPathBeginsWith": "/tblsource/blobs/data/tbl_emp_source.csv",
+					"blobPathBeginsWith": "/tblsource/blobs/data/tbl_emp_source",
+					"blobPathEndsWith": ".csv",
 					"ignoreEmptyBlobs": true,
 					"scope": "[parameters('Trigger pipeline SCD Type 1 when change to blob container_properties_typeProperties_scope')]",
 					"events": [
