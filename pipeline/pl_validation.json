@@ -1,0 +1,29 @@
+{
+	"name": "pl_validation",
+	"properties": {
+		"activities": [
+			{
+				"name": "Validation1",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_AzureSqlTable_SCDType1",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_db_username": "adfuser",
+							"ds_db_password": "azure@123"
+						}
+					},
+					"timeout": "0.12:00:00",
+					"sleep": 10
+				}
+			}
+		],
+		"folder": {
+			"name": "General Activities"
+		},
+		"annotations": []
+	}
+}
