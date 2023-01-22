@@ -23,13 +23,13 @@
 		"CopyFilesFromOneBlobToAnother-trigger_properties_pl_CopyFilesFromOneContainerToAnother_parameters_outputdataFromPipeline": {
 			"value": "outputdata"
 		},
-		"Trigger pipeline SCD Type 1 when change to blob container_properties_pl_SCD Type 1_parameters_pl_db_username": {
+		"TriggerpipelineSCDType1whenchangetoblobcontainer_properties_pl_SCD Type 1_parameters_pl_db_username": {
 			"value": "adfuser"
 		},
-		"Trigger pipeline SCD Type 1 when change to blob container_properties_pl_SCD Type 1_parameters_pl_db_password": {
+		"TriggerpipelineSCDType1whenchangetoblobcontainer_properties_pl_SCD Type 1_parameters_pl_db_password": {
 			"value": "azure@123"
 		},
-		"Trigger pipeline SCD Type 1 when change to blob container_properties_typeProperties_scope": {
+		"TriggerpipelineSCDType1whenchangetoblobcontainer_properties_typeProperties_scope": {
 			"value": "/subscriptions/e473806f-f465-4345-8bd3-41df581cd753/resourceGroups/adfdemo/providers/Microsoft.Storage/storageAccounts/azstorageacc01222023"
 		}
 	}
