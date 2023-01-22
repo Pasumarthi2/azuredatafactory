@@ -54,8 +54,14 @@
 						"referenceName": "SourceDelimitedText",
 						"type": "DatasetReference",
 						"parameters": {
-							"SourceContainerName": "tblsource",
-							"SourceContainerSubdirectory": "data"
+							"SourceContainerName": {
+								"value": "@pipeline().parameters.tblsourceFromPipeline",
+								"type": "Expression"
+							},
+							"SourceContainerSubdirectory": {
+								"value": "@pipeline().parameters.sourcesubdirectoryFromPipeline",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -64,13 +70,37 @@
 						"referenceName": "TargetDelimitedText",
 						"type": "DatasetReference",
 						"parameters": {
-							"targetContainerName": "tbltarget",
-							"taregetSubDirectoryName": "outputdata"
+							"targetContainerName": {
+								"value": "@pipeline().parameters.tbltargetFromPipeline",
+								"type": "Expression"
+							},
+							"taregetSubDirectoryName": {
+								"value": "@pipeline().parameters.outputdataFromPipeline",
+								"type": "Expression"
+							}
 						}
 					}
 				]
 			}
 		],
+		"parameters": {
+			"tblsourceFromPipeline": {
+				"type": "String",
+				"defaultValue": "tblsource"
+			},
+			"sourcesubdirectoryFromPipeline": {
+				"type": "String",
+				"defaultValue": "data"
+			},
+			"tbltargetFromPipeline": {
+				"type": "String",
+				"defaultValue": "tbltarget"
+			},
+			"outputdataFromPipeline": {
+				"type": "String",
+				"defaultValue": "outputdata"
+			}
+		},
 		"annotations": []
 	}
 }
