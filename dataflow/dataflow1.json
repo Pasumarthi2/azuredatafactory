@@ -28,6 +28,7 @@
 				"     ignoreNoFilesFound: false) ~> SourceBlobContainer",
 				"SourceBlobContainer sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sinkTargetBlobContainer"
 			]

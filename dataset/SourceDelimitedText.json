@@ -13,10 +13,6 @@
 			"SourceContainerSubdirectory": {
 				"type": "String",
 				"defaultValue": "data"
-			},
-			"filepattern": {
-				"type": "String",
-				"defaultValue": "*.csv"
 			}
 		},
 		"annotations": [],
@@ -24,10 +20,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@dataset().filepattern",
-					"type": "Expression"
-				},
 				"folderPath": {
 					"value": "@dataset().SourceContainerSubdirectory",
 					"type": "Expression"
