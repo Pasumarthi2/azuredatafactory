@@ -20,7 +20,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "tbl_emp_source.csv",
 				"folderPath": {
 					"value": "@dataset().SourceContainerSubdirectory",
 					"type": "Expression"
