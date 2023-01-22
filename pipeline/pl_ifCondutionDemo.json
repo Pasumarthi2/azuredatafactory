@@ -73,13 +73,120 @@
 								},
 								"ifFalseActivities": [
 									{
-										"name": "FalseWait",
+										"name": "FileType-Other-Archieving",
 										"type": "Wait",
-										"dependsOn": [],
+										"dependsOn": [
+											{
+												"activity": "Set variable2",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
 										"userProperties": [],
 										"typeProperties": {
 											"waitTimeInSeconds": 1
 										}
+									},
+									{
+										"name": "Set variable2",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "curremtFilename",
+											"value": {
+												"value": "item().name",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Copy data2",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "FileType-Other-Archieving",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"wildcardFolderPath": {
+														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+														"type": "Expression"
+													},
+													"wildcardFileName": {
+														"value": "@variables('curremtFilename')",
+														"type": "Expression"
+													},
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".txt"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "SourceDelimitedText",
+												"type": "DatasetReference",
+												"parameters": {
+													"SourceContainerName": {
+														"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+														"type": "Expression"
+													},
+													"SourceContainerSubdirectory": {
+														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "ArchieveTarget",
+												"type": "DatasetReference",
+												"parameters": {
+													"ArchievetargetContainerName": "archive",
+													"ArchievetaregetSubDirectoryName": "backup"
+												}
+											}
+										]
 									}
 								],
 								"ifTrueActivities": [

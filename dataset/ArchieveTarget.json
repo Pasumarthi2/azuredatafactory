@@ -1,0 +1,39 @@
+{
+	"name": "ArchieveTarget",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ArchievetargetContainerName": {
+				"type": "String",
+				"defaultValue": "archive"
+			},
+			"ArchievetaregetSubDirectoryName": {
+				"type": "String",
+				"defaultValue": "backup"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@dataset().taregetSubDirectoryName",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().targetContainerName",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
