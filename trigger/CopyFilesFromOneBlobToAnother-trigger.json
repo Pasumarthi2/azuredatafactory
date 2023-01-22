@@ -1,0 +1,30 @@
+{
+	"name": "CopyFilesFromOneBlobToAnother-trigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_CopyFilesFromOneContainerToAnother",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"tblsourceFromPipeline": "tblsource",
+					"sourcesubdirectoryFromPipeline": "data",
+					"tbltargetFromPipeline": "tbltarget",
+					"outputdataFromPipeline": "outputdata"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2023-01-22T03:51:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
