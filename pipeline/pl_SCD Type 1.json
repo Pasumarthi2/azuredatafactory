@@ -17,7 +17,19 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "df_SCD Type1 Demo",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sink1": {
+								"ds_db_username": {
+									"value": "@pipeline().parameters.pl_db_username",
+									"type": "Expression"
+								},
+								"ds_db_password": {
+									"value": "@pipeline().parameters.pl_db_password",
+									"type": "Expression"
+								}
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
@@ -27,6 +39,16 @@
 				}
 			}
 		],
+		"parameters": {
+			"pl_db_username": {
+				"type": "String",
+				"defaultValue": "adfuser"
+			},
+			"pl_db_password": {
+				"type": "String",
+				"defaultValue": "azure@123"
+			}
+		},
 		"folder": {
 			"name": "SCD Types Demo"
 		},
