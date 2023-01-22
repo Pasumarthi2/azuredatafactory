@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"on": {
-						"value": "@pipeline().parameters.DirectoryName",
+						"value": "@pipeline().parameters.filetargetdirectory",
 						"type": "Expression"
 					},
 					"cases": [
