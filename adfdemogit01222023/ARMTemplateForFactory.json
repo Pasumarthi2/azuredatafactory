@@ -32,15 +32,15 @@
 			"type": "string",
 			"defaultValue": "outputdata"
 		},
-		"TriggerpipelineSCDType1whenchangetoblobcontainer_properties_pl_SCD Type 1_parameters_pl_db_username": {
+		"Trigger pipeline SCDType1 when change to blob container_properties_pl_SCD Type 1_parameters_pl_db_username": {
 			"type": "string",
 			"defaultValue": "adfuser"
 		},
-		"TriggerpipelineSCDType1whenchangetoblobcontainer_properties_pl_SCD Type 1_parameters_pl_db_password": {
+		"Trigger pipeline SCDType1 when change to blob container_properties_pl_SCD Type 1_parameters_pl_db_password": {
 			"type": "string",
 			"defaultValue": "azure@123"
 		},
-		"TriggerpipelineSCDType1whenchangetoblobcontainer_properties_typeProperties_scope": {
+		"Trigger pipeline SCDType1 when change to blob container_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/e473806f-f465-4345-8bd3-41df581cd753/resourceGroups/adfdemo/providers/Microsoft.Storage/storageAccounts/azstorageacc01222023"
 		}
@@ -1396,12 +1396,12 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/TriggerpipelineSCDType1whenchangetoblobcontainer')]",
+			"name": "[concat(parameters('factoryName'), '/Trigger pipeline SCDType1 when change to blob container')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -1409,8 +1409,8 @@
 							"type": "PipelineReference"
 						},
 						"parameters": {
-							"pl_db_username": "[parameters('TriggerpipelineSCDType1whenchangetoblobcontainer_properties_pl_SCD Type 1_parameters_pl_db_username')]",
-							"pl_db_password": "[parameters('TriggerpipelineSCDType1whenchangetoblobcontainer_properties_pl_SCD Type 1_parameters_pl_db_password')]"
+							"pl_db_username": "[parameters('Trigger pipeline SCDType1 when change to blob container_properties_pl_SCD Type 1_parameters_pl_db_username')]",
+							"pl_db_password": "[parameters('Trigger pipeline SCDType1 when change to blob container_properties_pl_SCD Type 1_parameters_pl_db_password')]"
 						}
 					}
 				],
@@ -1419,7 +1419,7 @@
 					"blobPathBeginsWith": "/tblsource/blobs/data/tbl_emp_source",
 					"blobPathEndsWith": ".csv",
 					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('TriggerpipelineSCDType1whenchangetoblobcontainer_properties_typeProperties_scope')]",
+					"scope": "[parameters('Trigger pipeline SCDType1 when change to blob container_properties_typeProperties_scope')]",
 					"events": [
 						"Microsoft.Storage.BlobDeleted",
 						"Microsoft.Storage.BlobCreated"
