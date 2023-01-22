@@ -1,10 +1,11 @@
 {
-	"name": "pipeline1",
+	"name": "pl_CopyFilesFromOneContainerToAnother",
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
-				"type": "ExecuteDataFlow",
+				"name": "Copy data1",
+				"description": "Copy files from One container to another",
+				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,25 +16,57 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "dataflow1",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"SourceBlobContainer": {
-								"SourceContainerName": "tblsource",
-								"SourceContainerSubdirectory": "data"
-							},
-							"sinkTargetBlobContainer": {
-								"targetContainerName": "tbltarget"
-							}
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
 					},
-					"traceLevel": "Fine"
-				}
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDelimitedText",
+						"type": "DatasetReference",
+						"parameters": {
+							"SourceContainerName": "tblsource",
+							"SourceContainerSubdirectory": "data"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "TargetDelimitedText",
+						"type": "DatasetReference",
+						"parameters": {
+							"targetContainerName": "tbltarget"
+						}
+					}
+				]
 			}
 		],
 		"annotations": []
