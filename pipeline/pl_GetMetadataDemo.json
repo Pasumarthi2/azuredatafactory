@@ -1,5 +1,5 @@
 {
-	"name": "GetMetadata",
+	"name": "pl_GetMetadataDemo",
 	"properties": {
 		"activities": [
 			{
@@ -28,6 +28,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
