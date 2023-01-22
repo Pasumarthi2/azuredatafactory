@@ -65,7 +65,12 @@
 							"name": "If Condition1",
 							"type": "IfCondition",
 							"dependsOn": [],
-							"userProperties": [],
+							"userProperties": [
+								{
+									"name": "up",
+									"value": "item().name"
+								}
+							],
 							"typeProperties": {
 								"expression": {
 									"value": "@contains(item().name , 'Emp')",
