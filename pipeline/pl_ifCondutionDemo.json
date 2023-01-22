@@ -1,0 +1,363 @@
+{
+	"name": "pl_ifCondutionDemo",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "SourceDelimitedText",
+						"type": "DatasetReference",
+						"parameters": {
+							"SourceContainerName": {
+								"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+								"type": "Expression"
+							},
+							"SourceContainerSubdirectory": {
+								"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@contains(item().name , 'Emp')",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Otherwise Condition",
+										"description": "Other file type Moving to Achieve directory",
+										"type": "Wait",
+										"dependsOn": [
+											{
+												"activity": "Set variable2",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 1
+										}
+									},
+									{
+										"name": "Set variable2",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "curremtFilename",
+											"value": {
+												"value": "@item().name",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Copy data to archeive container",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "Otherwise Condition",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"wildcardFolderPath": {
+														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+														"type": "Expression"
+													},
+													"wildcardFileName": {
+														"value": "@variables('curremtFilename')",
+														"type": "Expression"
+													},
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".txt"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "SourceDelimitedText",
+												"type": "DatasetReference",
+												"parameters": {
+													"SourceContainerName": {
+														"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+														"type": "Expression"
+													},
+													"SourceContainerSubdirectory": {
+														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "ArchieveTarget",
+												"type": "DatasetReference",
+												"parameters": {
+													"ArchievetargetContainerName": {
+														"value": "@pipeline().parameters.pl__param_archeiveContainer",
+														"type": "Expression"
+													},
+													"ArchievetaregetSubDirectoryName": {
+														"value": "@pipeline().parameters.pl__param_archeiveSubdirectory",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Condition Satisfied",
+										"description": "Condition satisfied -Moving file to target directory",
+										"type": "Wait",
+										"dependsOn": [
+											{
+												"activity": "Set variable1",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 1
+										}
+									},
+									{
+										"name": "Copy data to tbltarget container",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "Condition Satisfied",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"wildcardFolderPath": {
+														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+														"type": "Expression"
+													},
+													"wildcardFileName": {
+														"value": "@variables('curremtFilename')",
+														"type": "Expression"
+													},
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".csv"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "SourceDelimitedText",
+												"type": "DatasetReference",
+												"parameters": {
+													"SourceContainerName": {
+														"value": "@pipeline().parameters.pl__param_tblsourceContainer",
+														"type": "Expression"
+													},
+													"SourceContainerSubdirectory": {
+														"value": "@pipeline().parameters.pl_param_SoureSubdirectory",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "TargetDelimitedText",
+												"type": "DatasetReference",
+												"parameters": {
+													"targetContainerName": {
+														"value": "@pipeline().parameters.pl__param_tbltargetContainer",
+														"type": "Expression"
+													},
+													"taregetSubDirectoryName": {
+														"value": "@pipeline().parameters.pl_param_targetSubdirectory",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									},
+									{
+										"name": "Set variable1",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "curremtFilename",
+											"value": "@item().name"
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"pl_param_SoureSubdirectory": {
+				"type": "string",
+				"defaultValue": "data"
+			},
+			"pl_param_targetSubdirectory": {
+				"type": "string",
+				"defaultValue": "outputdata"
+			},
+			"pl__param_tbltargetContainer": {
+				"type": "string",
+				"defaultValue": "tbltarget"
+			},
+			"pl__param_tblsourceContainer": {
+				"type": "string",
+				"defaultValue": "tblsource"
+			},
+			"pl__param_archeiveContainer": {
+				"type": "string",
+				"defaultValue": "archive"
+			},
+			"pl__param_archeiveSubdirectory": {
+				"type": "string",
+				"defaultValue": "backup"
+			}
+		},
+		"variables": {
+			"curremtFilename": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Iteration Conditionals"
+		},
+		"annotations": []
+	}
+}
