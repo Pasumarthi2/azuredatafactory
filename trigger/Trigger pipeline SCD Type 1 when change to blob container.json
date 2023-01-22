@@ -2,7 +2,7 @@
 	"name": "Trigger pipeline SCD Type 1 when change to blob container",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
